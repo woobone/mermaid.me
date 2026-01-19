@@ -1,0 +1,225 @@
+.tab-view {
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-primary);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 스크롤 가능한 탭 영역 */
+.tab-view-inner {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 4px;
+  gap: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
+  scroll-behavior: smooth;
+}
+
+/* 탭 영역 스크롤바 숨기기 */
+.tab-view-inner::-webkit-scrollbar {
+  height: 0;
+  display: none;
+}
+
+/* 스크롤 버튼 - absolute 포지션으로 탭 위에 오버레이 */
+.tab-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 28px;
+  background: var(--bg-tertiary);
+  border: none;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 10px;
+  transition: opacity 0.15s, background 0.15s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tab-scroll-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tab-scroll-btn:hover {
+  background: var(--button-hover);
+  color: var(--text-primary);
+}
+
+.tab-scroll-btn:active {
+  background: var(--button-active);
+}
+
+.tab-scroll-btn.left {
+  left: 4px;
+}
+
+.tab-scroll-btn.right {
+  right: 36px; /* 새 탭 버튼 공간 확보 */
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  height: 32px;
+  background: var(--tab-bg);
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+  position: relative;
+  /*
+  min-width: 120px;
+  max-width: 5000px;
+  */
+  flex-shrink: 0;
+}
+
+.tab-item:hover {
+  background: var(--tab-hover);
+}
+
+.tab-item.active {
+  background: var(--tab-active);
+  border-color: var(--accent-primary);
+  border-bottom-color: transparent;
+  color: var(--text-primary);
+}
+
+.tab-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.tab-title {
+  font-size: 13px;
+  white-space: nowrap;
+
+  /*
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  */
+}
+
+.modified-indicator {
+  font-size: 12px;
+  color: var(--status-success);
+  flex-shrink: 0;
+  margin-left: -4px;
+}
+
+.tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.tab-close:hover {
+  background: var(--button-hover);
+  color: var(--text-primary);
+}
+
+.tab-new-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  margin-left: 4px;
+  margin-right: 4px;
+  transition: all 0.15s;
+}
+
+.tab-new-btn:hover {
+  background: var(--button-bg);
+  color: var(--text-primary);
+}
+
+.tab-new-btn:active {
+  background: var(--button-active);
+}
+
+/* 드래그 상태 */
+.tab-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.tab-item {
+  cursor: grab;
+}
+
+.tab-item:active {
+  cursor: grabbing;
+}
+
+/* 컨텍스트 메뉴 */
+.tab-context-menu {
+  position: fixed;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 4px;
+  box-shadow: var(--shadow-medium);
+  z-index: 1000;
+  min-width: 180px;
+  padding: 4px 0;
+}
+
+.context-menu-item {
+  padding: 8px 16px;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.context-menu-item:hover {
+  background: var(--button-hover);
+  color: var(--text-primary);
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: var(--border-secondary);
+  margin: 4px 0;
+}
+

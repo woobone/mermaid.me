@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "baseUrl": ".",
+    "paths": {
+      "@types/*": ["src/types/*"]
+    },
+    "rootDir": "src",
+    "outDir": "dist/tscbuild",
+    "resolveJsonModule": true
+  },
+  "include": ["src/preload/**/*.ts", "src/types/**/*.ts"],
+  "exclude": ["node_modules", "dist", "tests"]
+}

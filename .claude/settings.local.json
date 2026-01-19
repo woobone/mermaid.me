@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx playwright test:*)",
+      "Bash(npm test:*)",
+      "Bash(node node_modules/@playwright/test/cli.js test:*)",
+      "Bash(npm run dev:renderer:*)",
+      "Bash(dir node_modules.binvite.cmd)",
+      "Bash(dir node_modules.binplaywright.cmd)",
+      "Bash(npm install:*)",
+      "Bash(npx playwright install)",
+      "Bash(timeout 60 npx playwright test:*)",
+      "Bash(timeout 30 npx playwright test:*)",
+      "Bash(cat:*)",
+      "Bash(pkill:*)",
+      "Bash(timeout 90 npx playwright test:*)",
+      "Bash(timeout 180 npx playwright test:*)",
+      "Bash(timeout 120 npx playwright test:*)",
+      "Bash(timeout 30 npm run dev:*)",
+      "Bash(npm run dist:mac:*)",
+      "Bash(npm run build:renderer:*)",
+      "Bash(find src/main -name \"*.js\" -exec sh -c 'mv \"\"$1\"\" \"\"${1%.js}.ts\"\"' _ {} ;)",
+      "Bash(find src/renderer -name \"*.js\" -exec sh -c 'mv \"\"$1\"\" \"\"${1%.js}.ts\"\"' _ {} ;)",
+      "Bash(find:*)",
+      "Bash(npx tsc:*)",
+      "Bash(ls:*)",
+      "Bash(npm run pack:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

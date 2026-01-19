@@ -1,0 +1,107 @@
+/* src/renderer/components/Editor/CodeBlock.css */
+
+.code-block-wrapper {
+  margin: 16px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+}
+
+/* 공통 헤더 */
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.code-block-language {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  text-transform: lowercase;
+}
+
+/* 복사 버튼 */
+.code-block-copy {
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.code-block-copy:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.code-block-copy.copy-success {
+  color: var(--status-success);
+  border-color: var(--status-success);
+}
+
+.code-block-copy.copy-error {
+  color: var(--status-error);
+  border-color: var(--status-error);
+}
+
+/* 본문 컨테이너 */
+.code-block-content {
+  overflow: auto;
+}
+
+/* ============================================
+   라이트 모드 (CodeBlock 전용)
+   ============================================ */
+[data-theme="light"] .code-block-wrapper {
+  background: #fafafa;
+}
+
+/* ============================================
+   다크 모드 (CodeBlock 전용)
+   ============================================ */
+[data-theme="dark"] .code-block-wrapper {
+  background: #282c34;
+}
+
+/* ============================================
+   Mermaid 다이어그램 (CodeBlock 내부, showHeader=false)
+   ============================================ */
+.code-block-content .mermaid-diagram {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+}
+
+.code-block-content .mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mermaid 에러 (CodeBlock 내부) */
+.code-block-content .mermaid-error {
+  width: 100%;
+  padding: 16px;
+  margin: 0;
+  border-radius: 0;
+}
+
+[data-theme="light"] .code-block-content .mermaid-error {
+  background-color: #ffe6e6;
+  border: 1px solid var(--status-error);
+  color: var(--status-error);
+}
+
+[data-theme="dark"] .code-block-content .mermaid-error {
+  background-color: #4a1515;
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+}

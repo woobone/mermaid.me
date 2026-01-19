@@ -1,0 +1,37 @@
+.view-mode-toggle {
+  display: flex;
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 8px;
+}
+
+.view-mode-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-right: 1px solid var(--border-primary);
+}
+
+.view-mode-btn:last-child {
+  border-right: none;
+}
+
+.view-mode-btn:hover {
+  background: var(--button-hover);
+  color: var(--text-primary);
+}
+
+.view-mode-btn.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.view-mode-btn.active:hover {
+  background: var(--accent-hover);
+}

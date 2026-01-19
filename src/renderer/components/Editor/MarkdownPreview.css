@@ -1,0 +1,456 @@
+/* src/renderer/components/Editor/MarkdownPreview.css */
+
+/* ============================================
+   Markdown 전용 CSS 변수 (컴포넌트 스코프)
+   ============================================ */
+
+/* 라이트 모드 */
+[data-theme="light"] .markdown-content {
+  --md-bg: #ffffff;
+  --md-text: #24292e;
+  --md-text-secondary: #6a737d;
+  --md-border: #eaecef;
+  --md-code-bg: rgba(27, 31, 35, 0.05);
+  --md-code-text: #e45649;
+  --md-table-header: #f6f8fa;
+  --md-table-alt: #f6f8fa;
+  --md-link: #0366d6;
+  --md-blockquote-border: #dfe2e5;
+}
+
+/* 다크 모드 */
+[data-theme="dark"] .markdown-content {
+  --md-bg: #1e1e1e;
+  --md-text: #cccccc;
+  --md-text-secondary: #8b949e;
+  --md-border: #3c3c3c;
+  --md-code-bg: #3e4451;
+  --md-code-text: #e5c07b;
+  --md-table-header: #2d2d2d;
+  --md-table-alt: #252526;
+  --md-link: #58a6ff;
+  --md-blockquote-border: #444c56;
+}
+
+/* ============================================
+   기본 레이아웃
+   ============================================ */
+.markdown-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  background: var(--bg-primary);
+}
+
+.markdown-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 40px;
+  background: var(--md-bg);
+  color: var(--md-text);
+  line-height: 1.6;
+  width: 100%;
+}
+
+/* ============================================
+   헤딩 스타일
+   ============================================ */
+.markdown-content h1 {
+  font-size: 2em;
+  border-bottom: 1px solid var(--md-border);
+  padding-bottom: 0.3em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-content h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--md-border);
+  padding-bottom: 0.3em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-content h3 {
+  font-size: 1.25em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-content h4 {
+  font-size: 1em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-content h5 {
+  font-size: 0.875em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-content h6 {
+  font-size: 0.85em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: var(--md-text-secondary);
+}
+
+/* ============================================
+   텍스트 요소
+   ============================================ */
+.markdown-content p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-content a {
+  color: var(--md-link);
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================
+   인라인 코드
+   ============================================ */
+.markdown-content .inline-code {
+  background-color: var(--md-code-bg);
+  color: var(--md-code-text);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 85%;
+}
+
+/* ============================================
+   블록 코드 (CodeBlock에서 처리, 기본 리셋만)
+   ============================================ */
+.markdown-content pre {
+  margin: 0;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* ============================================
+   인용문
+   ============================================ */
+.markdown-content blockquote {
+  border-left: 4px solid var(--md-blockquote-border);
+  padding-left: 16px;
+  color: var(--md-text-secondary);
+  margin: 0 0 16px 0;
+}
+
+/* ============================================
+   리스트
+   ============================================ */
+.markdown-content ul,
+.markdown-content ol {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-left: 2em;
+}
+
+.markdown-content li {
+  margin-top: 0.25em;
+}
+
+/* 체크박스 */
+.markdown-content input[type="checkbox"] {
+  margin-right: 0.5em;
+}
+
+/* ============================================
+   테이블
+   ============================================ */
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 16px;
+  overflow: auto;
+  display: block;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid var(--md-border);
+  padding: 6px 13px;
+}
+
+.markdown-content table th {
+  background-color: var(--md-table-header);
+  font-weight: 600;
+}
+
+.markdown-content table tr {
+  background-color: var(--md-bg);
+  border-top: 1px solid var(--md-border);
+}
+
+.markdown-content table tr:nth-child(2n) {
+  background-color: var(--md-table-alt);
+}
+
+/* ============================================
+   이미지
+   ============================================ */
+.markdown-content img {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ============================================
+   구분선
+   ============================================ */
+.markdown-content hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: var(--md-border);
+  border: 0;
+}
+
+/* ============================================
+   Toast 메시지
+   ============================================ */
+.markdown-toast {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  animation: toastFadeIn 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Toast - 라이트 모드 */
+[data-theme="light"] .markdown-toast-info {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+[data-theme="light"] .markdown-toast-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+[data-theme="light"] .markdown-toast-error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+/* Toast - 다크 모드 */
+[data-theme="dark"] .markdown-toast-info {
+  background-color: #1e3a5f;
+  color: #90caf9;
+  border: 1px solid #1565c0;
+}
+
+[data-theme="dark"] .markdown-toast-success {
+  background-color: #1b3d1b;
+  color: #a5d6a7;
+  border: 1px solid #2e7d32;
+}
+
+[data-theme="dark"] .markdown-toast-error {
+  background-color: #4a1515;
+  color: #ef9a9a;
+  border: 1px solid #c62828;
+}
+
+@keyframes toastFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Export 버튼 비활성화 */
+.export-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Mermaid 블록 (MermaidBlock 단독 사용 시, showHeader=true)
+   ============================================ */
+.mermaid-block-wrapper {
+  position: relative;
+  margin: 16px 0;
+}
+
+.mermaid-block {
+  padding: 16px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  max-width: 100%;
+}
+
+[data-theme="light"] .mermaid-block {
+  background: #f6f8fa;
+}
+
+[data-theme="dark"] .mermaid-block {
+  background: #2d2d2d;
+}
+
+.mermaid-block svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mermaid 복사 버튼 */
+.mermaid-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+  z-index: 10;
+}
+
+.mermaid-copy-btn.visible {
+  opacity: 1;
+}
+
+/* Mermaid 복사 버튼 - 라이트 모드 */
+[data-theme="light"] .mermaid-copy-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #d0d7de;
+  color: #24292e;
+}
+
+[data-theme="light"] .mermaid-copy-btn:hover {
+  background: #f3f4f6;
+  border-color: #afb8c1;
+}
+
+[data-theme="light"] .mermaid-copy-btn.copy-success {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+[data-theme="light"] .mermaid-copy-btn.copy-error {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+/* Mermaid 복사 버튼 - 다크 모드 */
+[data-theme="dark"] .mermaid-copy-btn {
+  background: rgba(45, 45, 45, 0.9);
+  border: 1px solid #4a4a4a;
+  color: #cccccc;
+}
+
+[data-theme="dark"] .mermaid-copy-btn:hover {
+  background: #3c3c3c;
+  border-color: #5a5a5a;
+}
+
+[data-theme="dark"] .mermaid-copy-btn.copy-success {
+  background: #1b3d1b;
+  border-color: #28a745;
+  color: #a5d6a7;
+}
+
+[data-theme="dark"] .mermaid-copy-btn.copy-error {
+  background: #4a1515;
+  border-color: #dc3545;
+  color: #ef9a9a;
+}
+
+/* Mermaid 에러 */
+.mermaid-error {
+  background-color: #ffe6e6;
+  border: 1px solid #ff0000;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 16px 0;
+  color: #d00;
+}
+
+.mermaid-error pre {
+  background: transparent;
+  margin: 0;
+  font-size: 12px;
+  color: #d00;
+}
+
+[data-theme="dark"] .mermaid-error {
+  background-color: #4a1515;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .mermaid-error pre {
+  color: #ff6b6b;
+}
+
+/* ============================================
+   프린트 스타일
+   ============================================ */
+@media print {
+  .markdown-content {
+    background: white !important;
+    color: black !important;
+  }
+
+  .markdown-content a {
+    color: #0366d6 !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  pre, code, table, blockquote, .code-block-wrapper {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  table {
+    page-break-inside: avoid;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+}

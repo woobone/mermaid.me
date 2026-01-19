@@ -1,0 +1,458 @@
+/**
+ * ============================================================================
+ * TerminalPanel Styles
+ * ============================================================================
+ */
+
+.terminal-panel {
+  display: flex;
+  flex-direction: column;
+  background: #1e1e1e;
+  border: 1px solid #3c3c3c;
+  border-bottom: none;
+  min-height: 100px;
+  max-height: 70vh;
+  flex-shrink: 0;
+}
+
+/* Light theme */
+.terminal-panel.light {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-bottom: none;
+}
+
+.terminal-panel.light .terminal-header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.terminal-panel.light .terminal-tab {
+  color: var(--text-primary);
+}
+
+.terminal-panel.light .terminal-tab.active {
+  background: var(--bg-tertiary);
+}
+
+/* Terminal Header */
+.terminal-header {
+  display: flex;
+  align-items: center;
+  background: #252526;
+  border-bottom: 1px solid #3c3c3c;
+  height: 32px;
+  flex-shrink: 0;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 스크롤 버튼 */
+.terminal-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 24px;
+  background: #252526;
+  border: none;
+  border-radius: 4px;
+  color: #858585;
+  cursor: pointer;
+  font-size: 10px;
+  transition: opacity 0.15s, background 0.15s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.terminal-scroll-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.terminal-scroll-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.terminal-scroll-btn.left {
+  left: 4px;
+}
+
+.terminal-scroll-btn.right {
+  right: 64px; /* + 버튼과 × 버튼 공간 확보 */
+}
+
+/* 탭 목록 (스크롤 가능) */
+.terminal-tabs {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+  padding-left: 28px; /* 스크롤 버튼 공간 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  min-width: 0;
+  height: 100%;
+}
+
+/* 스크롤바 숨기기 */
+.terminal-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.terminal-tabs {
+  scrollbar-width: none; /* Firefox */
+}
+
+/* 개별 탭 */
+.terminal-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  height: 26px;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #cccccc;
+  background: transparent;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.terminal-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 활성 탭 */
+.terminal-tab.active {
+  background: #1e1e1e;
+  color: #ffffff;
+}
+
+/* 탭 이름 */
+.terminal-tab-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 탭 닫기 버튼 */
+.terminal-tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+  color: #858585;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.terminal-tab:hover .terminal-tab-close,
+.terminal-tab.active .terminal-tab-close {
+  opacity: 1;
+}
+
+.terminal-tab-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* 탭 추가 버튼 (+) */
+.terminal-add-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: #858585;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.terminal-add-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* 패널 닫기 버튼 */
+.terminal-panel-close-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: #858585;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 4px;
+  margin-right: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.terminal-panel-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* 터미널 뷰 (각 터미널 컨테이너) */
+.terminal-view {
+  height: 100%;
+  width: 100%;
+}
+
+/* ========================================
+ * 라이트 테마
+ * ======================================== */
+
+.terminal-panel.light .terminal-header {
+  background: #f3f3f3;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.terminal-panel.light .terminal-scroll-btn {
+  background: #f3f3f3;
+  color: #616161;
+}
+
+.terminal-panel.light .terminal-scroll-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1e1e1e;
+}
+
+.terminal-panel.light .terminal-tab {
+  color: #616161;
+}
+
+.terminal-panel.light .terminal-tab:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.terminal-panel.light .terminal-tab.active {
+  background: #ffffff;
+  color: #1e1e1e;
+}
+
+.terminal-panel.light .terminal-tab-close {
+  color: #616161;
+}
+
+.terminal-panel.light .terminal-tab-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #1e1e1e;
+}
+
+.terminal-panel.light .terminal-add-btn,
+.terminal-panel.light .terminal-panel-close-btn {
+  color: #616161;
+}
+
+.terminal-panel.light .terminal-add-btn:hover,
+.terminal-panel.light .terminal-panel-close-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1e1e1e;
+}
+
+/* Terminal Content */
+.terminal-content {
+  flex: 1;
+  padding: 4px;
+  overflow: hidden;
+  background: #1e1e1e;
+}
+
+.terminal-panel.light .terminal-content {
+  background: #ffffff !important;
+}
+
+.terminal-content .xterm,
+.terminal-content .terminal {
+  height: 100%;
+  padding: 4px;
+  background: #1e1e1e;
+}
+
+.terminal-panel.light .terminal-content .xterm,
+.terminal-panel.light .terminal-content .terminal {
+  background: #ffffff !important;
+}
+
+.terminal-content .xterm-viewport {
+  overflow-y: auto !important;
+  background-color: #1e1e1e !important;
+}
+
+.terminal-panel.light .terminal-content .xterm-viewport {
+  background-color: #ffffff !important;
+}
+
+.terminal-content .xterm-screen {
+  padding: 0;
+}
+
+/* Scrollbar customization for terminal */
+.terminal-content .xterm-viewport::-webkit-scrollbar {
+  width: 10px;
+}
+
+.terminal-content .xterm-viewport::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.terminal-content .xterm-viewport::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 5px;
+}
+
+.terminal-content .xterm-viewport::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
+
+.terminal-panel.light .terminal-content .xterm-viewport::-webkit-scrollbar-track {
+  background: #f3f3f3;
+}
+
+.terminal-panel.light .terminal-content .xterm-viewport::-webkit-scrollbar-thumb {
+  background: #c8c8c8;
+}
+
+.terminal-panel.light .terminal-content .xterm-viewport::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Horizontal Resizer for Terminal */
+.terminal-resizer {
+  height: 4px;
+  background: transparent;
+  cursor: ns-resize;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.terminal-resizer::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 4px;
+  background: var(--border-secondary);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.terminal-resizer:hover::after {
+  opacity: 1;
+}
+
+.terminal-resizer:hover {
+  background: var(--border-secondary);
+}
+
+/* Selection styling */
+.terminal-content .xterm .xterm-selection div {
+  background: rgba(38, 79, 120, 0.5) !important;
+}
+
+.terminal-panel.light .terminal-content .xterm .xterm-selection div {
+  background: rgba(0, 120, 212, 0.3) !important;
+}
+
+/* ========================================
+ * 탭 이름 입력 필드
+ * ======================================== */
+.terminal-tab-name-input {
+  background: transparent;
+  border: 1px solid #007acc;
+  border-radius: 2px;
+  color: inherit;
+  font-size: 12px;
+  font-family: inherit;
+  padding: 2px 4px;
+  width: 100px;
+  outline: none;
+}
+
+.terminal-panel.light .terminal-tab-name-input {
+  border-color: #0078d4;
+}
+
+/* ========================================
+ * 컨텍스트 메뉴
+ * ======================================== */
+.terminal-context-menu {
+  position: fixed;
+  background: #252526;
+  border: 1px solid #3c3c3c;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  padding: 4px 0;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.terminal-context-menu-item {
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #cccccc;
+}
+
+.terminal-context-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.terminal-context-menu-divider {
+  height: 1px;
+  background: #3c3c3c;
+  margin: 4px 0;
+}
+
+/* 라이트 테마 컨텍스트 메뉴 */
+.terminal-panel.light .terminal-context-menu {
+  background: #ffffff;
+  border-color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.terminal-panel.light .terminal-context-menu-item {
+  color: #1e1e1e;
+}
+
+.terminal-panel.light .terminal-context-menu-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.terminal-panel.light .terminal-context-menu-divider {
+  background: #e0e0e0;
+}

@@ -1,0 +1,120 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # v1.0.0, v1.2.3 등의 태그가 푸시될 때 실행
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          # macOS - Apple Silicon (arm64)
+          - os: macos-latest
+            arch: arm64
+            platform: mac
+
+          # macOS - Intel (x64)
+          - os: macos-latest
+            arch: x64
+            platform: mac
+
+          # Windows - x64
+          - os: windows-latest
+            arch: x64
+            platform: win
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Electron (TypeScript)
+        run: npm run build:electron
+
+      - name: Build Renderer (Vite)
+        run: npm run build:renderer
+
+      - name: Build macOS (Apple Silicon)
+        if: matrix.platform == 'mac' && matrix.arch == 'arm64'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist:mac:apple
+
+      - name: Build macOS (Intel)
+        if: matrix.platform == 'mac' && matrix.arch == 'x64'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist:mac:intel
+
+      - name: Build Windows
+        if: matrix.platform == 'win'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist:win
+
+      - name: Upload artifacts (macOS Apple Silicon)
+        if: matrix.platform == 'mac' && matrix.arch == 'arm64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64
+          path: |
+            dist/release/*.dmg
+            dist/release/*-arm64-mac.zip
+
+      - name: Upload artifacts (macOS Intel)
+        if: matrix.platform == 'mac' && matrix.arch == 'x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64
+          path: |
+            dist/release/*.dmg
+            dist/release/*-mac.zip
+
+      - name: Upload artifacts (Windows)
+        if: matrix.platform == 'win'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: |
+            dist/release/*.exe
+
+      - name: Upload to GitHub Releases (macOS Apple Silicon)
+        if: matrix.platform == 'mac' && matrix.arch == 'arm64'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/release/*-arm64.dmg
+            dist/release/*-arm64-mac.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to GitHub Releases (macOS Intel)
+        if: matrix.platform == 'mac' && matrix.arch == 'x64'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/release/*.dmg
+            dist/release/*-mac.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to GitHub Releases (Windows)
+        if: matrix.platform == 'win'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/release/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

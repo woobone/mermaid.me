@@ -1,0 +1,518 @@
+/**
+ * ==========================================================================
+ * Theme CSS Variables System
+ * ==========================================================================
+ *
+ * Light/Dark 테마를 지원하는 CSS 변수 시스템
+ * data-theme 속성으로 테마 전환
+ */
+
+/* Light Theme (Default) */
+:root[data-theme="light"] {
+  /* Primary Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f3f3;
+  --bg-tertiary: #e8e8e8;
+
+  /* Text Colors */
+  --text-primary: #1e1e1e;
+  --text-secondary: #616161;
+  --text-tertiary: #858585;
+
+  /* Accent Colors */
+  --accent-primary: #0078d4;
+  --accent-hover: #005a9e;
+  --accent-active: #004578;
+
+  /* Border Colors */
+  --border-primary: #e0e0e0;
+  --border-secondary: #c8c8c8;
+  --border-focus: #0078d4;
+
+  /* Status Colors */
+  --status-error: #e51400;
+  --status-warning: #ff8c00;
+  --status-success: #107c10;
+  --status-info: #0078d4;
+
+  /* Component-specific */
+  --sidebar-bg: #f3f3f3;
+  --sidebar-hover: #e8e8e8;
+  --sidebar-active: #e0e0e0;
+
+  --tab-bg: #ffffff;
+  --tab-hover: #f3f3f3;
+  --tab-active: #e8e8e8;
+  --tab-border: #e0e0e0;
+
+  --button-bg: #f3f3f3;
+  --button-hover: #e8e8e8;
+  --button-active: #d0d0d0;
+
+  --input-bg: #ffffff;
+  --input-border: #c8c8c8;
+  --input-focus-border: #0078d4;
+
+  /* Shadows */
+  --shadow-small: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-large: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark Theme */
+:root[data-theme="dark"] {
+  /* Primary Colors */
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #252526;
+  --bg-tertiary: #2d2d2d;
+
+  /* Text Colors */
+  --text-primary: #cccccc;
+  --text-secondary: #969696;
+  --text-tertiary: #6a6a6a;
+
+  /* Accent Colors */
+  --accent-primary: #0e639c;
+  --accent-hover: #1177bb;
+  --accent-active: #0e5a8a;
+
+  /* Border Colors */
+  --border-primary: #3c3c3c;
+  --border-secondary: #4a4a4a;
+  --border-focus: #0e639c;
+
+  /* Status Colors */
+  --status-error: #f48771;
+  --status-warning: #ffb900;
+  --status-success: #89d185;
+  --status-info: #3794ff;
+
+  /* Component-specific */
+  --sidebar-bg: #252526;
+  --sidebar-hover: #2a2d2e;
+  --sidebar-active: #37373d;
+
+  --tab-bg: #2d2d2d;
+  --tab-hover: #333333;
+  --tab-active: #3c3c3c;
+  --tab-border: #3c3c3c;
+
+  --button-bg: #3c3c3c;
+  --button-hover: #464646;
+  --button-active: #525252;
+
+  --input-bg: #3c3c3c;
+  --input-border: #4a4a4a;
+  --input-focus-border: #0e639c;
+
+  /* Shadows */
+  --shadow-small: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-large: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+ * Base Styles
+ * ==========================================================================
+ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.file-explorer-container {
+  height: 100vh;
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.file-explorer-container.collapsed {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border-primary);
+}
+
+.explorer-collapsed {
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10px;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.show-explorer-btn {
+  background: var(--button-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  padding: 10px 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.show-explorer-btn:hover {
+  background: var(--button-hover);
+  border-color: var(--border-secondary);
+  transform: scale(1.05);
+}
+
+/* App Header with Theme Toggle */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Terminal Toggle Button */
+.terminal-toggle-btn {
+  background: var(--button-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 28px;
+}
+
+.terminal-toggle-btn:hover {
+  background: var(--button-hover);
+  border-color: var(--border-secondary);
+}
+
+.terminal-toggle-btn.active {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.terminal-toggle-btn.active:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.theme-toggle-btn {
+  background: var(--button-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 28px;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--button-hover);
+  border-color: var(--border-secondary);
+  transform: scale(1.05);
+}
+
+.theme-toggle-btn:active {
+  background: var(--button-active);
+  transform: scale(0.98);
+}
+
+.editor-preview-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.editor-preview-content {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-width: 0;
+  flex: 1;  /* 남은 공간 모두 차지 */
+}
+
+.editor-header,
+.preview-header {
+  padding: 10px 15px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-header {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.editor-header h3,
+.preview-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.file-path {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.diagram-container {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.diagram-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mermaid 다이어그램 스타일 오버라이드 */
+.diagram-container svg .edgePath path,
+.diagram-container svg .flowchart-link {
+  stroke-width: 1.2px !important;
+}
+
+.diagram-container svg text {
+  font-size: 14px !important;
+}
+
+.diagram-container svg .node rect,
+.diagram-container svg .node polygon,
+.diagram-container svg .node circle,
+.diagram-container svg .node ellipse {
+  padding: 12px !important;
+}
+
+.error {
+  background: var(--status-error);
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 20px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-secondary);
+  border-radius: 4px;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.export-btn {
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.export-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.export-btn:active {
+  transform: translateY(0);
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+}
+
+.empty-state-content {
+  text-align: center;
+  padding: 40px;
+}
+
+.empty-state-content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.empty-state-content p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.empty-state-btn {
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.empty-state-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.empty-state-btn:active {
+  transform: translateY(0);
+}
+
+/* Context Menu */
+.context-menu {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 4px;
+  box-shadow: var(--shadow-medium);
+  padding: 4px;
+  min-width: 200px;
+}
+
+.context-menu button {
+  width: 100%;
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 2px;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.context-menu button:hover {
+  background: var(--button-hover);
+}
+
+/* Toast Message */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 2000;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-success {
+  background: #4caf50;
+  color: white;
+}
+
+.toast-error {
+  background: #f44336;
+  color: white;
+}
