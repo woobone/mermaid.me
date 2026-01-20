@@ -73,6 +73,7 @@ interface ElectronAPI {
   // 다이어그램 내보내기 API
   exportDiagram: (svgData: string, exportType: string, fileName: string) => Promise<ExportResult>;
   saveExportedFile: (filePath: string, buffer: Uint8Array) => Promise<{ success: boolean; error?: string }>;
+  printToPDF: (htmlContent: string, fileName: string) => Promise<{ success: boolean; canceled?: boolean; filePath?: string; error?: string }>;
 
   // 메뉴 이벤트 API
   onMenuNew: (callback: IpcCallback) => void;
@@ -283,6 +284,12 @@ const electronAPI: ElectronAPI = {
    */
   saveExportedFile: (filePath: string, buffer: Uint8Array): Promise<{ success: boolean; error?: string }> =>
     ipcRenderer.invoke('save-exported-file', filePath, buffer),
+
+  /**
+   * Markdown을 PDF로 내보내기 (브라우저 프린트 엔진 사용)
+   */
+  printToPDF: (htmlContent: string, fileName: string): Promise<{ success: boolean; canceled?: boolean; filePath?: string; error?: string }> =>
+    ipcRenderer.invoke('print-to-pdf', htmlContent, fileName),
 
   // ==========================================================================
   // 메뉴 이벤트 API

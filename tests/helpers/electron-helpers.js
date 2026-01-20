@@ -61,9 +61,9 @@ async function waitForViteServer() {
  * Electron 애플리케이션 실행 및 초기화
  */
 async function launchElectron() {
-  // 절대 경로 계산
-  const mainPath = path.join(__dirname, '../../src/main/main.js');
-  const preloadPath = path.join(__dirname, '../../src/preload/preload.js');
+  // 절대 경로 계산 (TypeScript 빌드 출력 경로)
+  const mainPath = path.join(__dirname, '../../dist/tscbuild/main/main.js');
+  const preloadPath = path.join(__dirname, '../../dist/tscbuild/preload/preload.js');
 
   console.log('[Test] Launching Electron with:');
   console.log('[Test] Main:', mainPath);

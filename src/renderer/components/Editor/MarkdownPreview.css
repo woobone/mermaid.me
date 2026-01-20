@@ -427,13 +427,16 @@
    프린트 스타일
    ============================================ */
 @media print {
+  /* 현재 테마 색상 유지 (var 사용) */
   .markdown-content {
-    background: white !important;
-    color: black !important;
+    background: var(--md-bg) !important;
+    color: var(--md-text) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .markdown-content a {
-    color: #0366d6 !important;
+    color: var(--md-link) !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -452,5 +455,30 @@
 
   tr {
     page-break-inside: avoid;
+  }
+
+  /* Mermaid 블록 - 페이지 분할 방지 및 크기 유지 */
+  .mermaid-block-wrapper {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .mermaid-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* SVG 크기 유지 - 컨테이너에 맞춰 늘어나지 않도록 */
+  .mermaid-block svg {
+    max-width: 100% !important;
+    height: auto !important;
+    width: auto !important;
+  }
+
+  /* 복사 버튼 숨기기 */
+  .copy-button,
+  .mermaid-copy-btn,
+  .code-copy-btn {
+    display: none !important;
   }
 }

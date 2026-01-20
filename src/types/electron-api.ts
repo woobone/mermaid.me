@@ -45,6 +45,7 @@ export interface ElectronAPI {
   // ===== 내보내기 =====
   exportDiagram(svgData: string, exportType: string, fileName: string): Promise<ExportResult>;
   saveExportedFile(filePath: string, buffer: Uint8Array): Promise<{ success: boolean; error?: string }>;
+  printToPDF(htmlContent: string, fileName: string): Promise<{ success: boolean; canceled?: boolean; filePath?: string; error?: string }>;
 
   // ===== 탭/레이아웃 =====
   saveTabState(state: TabState): Promise<{ success: boolean }>;

@@ -1,11 +1,9 @@
 /**
  * Markdown PDF 내보내기 유틸리티
- * - 전체 콘텐츠를 이미지로 렌더링 후 페이지 분할
- * - Mermaid 다이어그램 포함 지원
+ * - Electron printToPDF API 사용 (브라우저 프린트 엔진)
+ * - CSS break-inside: avoid 자동 적용
+ * - 이미지 비율 유지, 페이지 분할 최적화
  */
-
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 // ============================================================================
 // 타입 정의
@@ -17,43 +15,86 @@ type ShowToastFn = (message: string, type?: ToastType) => void;
 interface ExportResult {
   success: boolean;
   canceled?: boolean;
-  pageCount?: number;
   filePath?: string;
   error?: string;
 }
 
 // ============================================================================
-// 상수 정의
+// PDF 내보내기용 스타일
 // ============================================================================
 
-// A4 크기 (px at 96 DPI)
-const A4 = {
-  WIDTH_PX: 794,   // 210mm
-  HEIGHT_PX: 1123, // 297mm
-} as const;
+// PDF 레이아웃 및 페이지 분할 관련 스타일만 (색상은 앱 스타일에서 상속)
+const PDF_STYLES = `
+  * {
+    box-sizing: border-box;
+  }
 
-// 페이지 마진 (px)
-const MARGIN = {
-  TOP: 40,
-  BOTTOM: 40,
-  LEFT: 40,
-  RIGHT: 40,
-} as const;
+  @page {
+    size: A4;
+    margin: 0;
+  }
 
-// 실제 컨텐츠 영역
-const CONTENT_WIDTH = A4.WIDTH_PX - MARGIN.LEFT - MARGIN.RIGHT;  // 714px
-const CONTENT_HEIGHT = A4.HEIGHT_PX - MARGIN.TOP - MARGIN.BOTTOM; // 1043px
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--md-bg);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
-// 렌더링 스케일 (선명도)
-const RENDER_SCALE = 2;
+  .markdown-content {
+    max-width: 100%;
+    padding: 15mm;
+    min-height: 100vh;
+  }
+
+  /* 페이지 분할 제어 */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  pre, blockquote, table, img {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Mermaid 다이어그램 블록 - 페이지 분할 방지 */
+  .mermaid-block-wrapper,
+  .mermaid-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* SVG 크기 유지 */
+  .mermaid-block svg {
+    max-width: 100%;
+    height: auto !important;
+    width: auto !important;
+  }
+
+  /* 코드 블록 래퍼 */
+  .code-block-wrapper {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 복사 버튼 숨기기 (PDF에서 불필요) */
+  .copy-button,
+  .mermaid-copy-btn,
+  .code-copy-btn {
+    display: none !important;
+  }
+`;
 
 // ============================================================================
 // 메인 내보내기 함수
 // ============================================================================
 
 /**
- * Markdown을 PDF로 내보내기
- * 전체 콘텐츠를 하나의 긴 이미지로 렌더링 후 A4 높이로 잘라서 페이지 분할
+ * Markdown을 PDF로 내보내기 (printToPDF 방식)
+ * - 브라우저 프린트 엔진이 자동으로 페이지 분할 처리
+ * - CSS break-inside: avoid가 자동 적용됨
  */
 export async function exportMarkdownToPDF(
   element: HTMLElement | null,
@@ -69,132 +110,27 @@ export async function exportMarkdownToPDF(
       throw new Error('Electron API not available');
     }
 
-    // 1. 저장 경로 선택
-    const result = await window.electronAPI.exportDiagram('', 'pdf', `${fileName}.pdf`);
-    if (result.canceled) return { success: false, canceled: true };
+    if (showToast) showToast('Preparing PDF...', 'info');
+
+    // HTML 콘텐츠 준비
+    const htmlContent = buildPDFHTML(element);
+
+    // printToPDF API 호출
+    const result = await window.electronAPI.printToPDF(htmlContent, `${fileName}.pdf`);
+
+    if (result.canceled) {
+      return { success: false, canceled: true };
+    }
+
     if (!result.success) {
-      throw new Error(result.error || 'Export dialog failed');
-    }
-
-    if (showToast) showToast('Rendering content...', 'info');
-
-    // 2. 클론 생성하여 렌더링 준비
-    const clone = element.cloneNode(true) as HTMLElement;
-    const container = document.createElement('div');
-    container.style.cssText = `
-      position: fixed;
-      left: -9999px;
-      top: 0;
-      width: ${CONTENT_WIDTH}px;
-      background: white;
-      padding: 0;
-      margin: 0;
-    `;
-    container.appendChild(clone);
-
-    // 스타일 적용
-    clone.style.cssText = `
-      width: ${CONTENT_WIDTH}px;
-      padding: 0;
-      margin: 0;
-      background: white;
-      color: #24292e;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      line-height: 1.6;
-    `;
-
-    document.body.appendChild(container);
-
-    // 렌더링 대기 (Mermaid SVG 포함)
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    // 3. 전체 콘텐츠를 하나의 캔버스로 렌더링
-    const canvas = await html2canvas(container, {
-      scale: RENDER_SCALE,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      width: CONTENT_WIDTH,
-      windowWidth: CONTENT_WIDTH,
-      logging: false,
-    });
-
-    document.body.removeChild(container);
-
-    // 4. 캔버스를 페이지 단위로 분할하여 PDF 생성
-    const totalHeight = canvas.height / RENDER_SCALE;
-    const pageContentHeight = CONTENT_HEIGHT;
-    const pageCount = Math.ceil(totalHeight / pageContentHeight);
-
-    if (showToast) showToast(`Creating ${pageCount} pages...`, 'info');
-
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'px',
-      format: [A4.WIDTH_PX, A4.HEIGHT_PX],
-      hotfixes: ['px_scaling'],
-    });
-
-    for (let page = 0; page < pageCount; page++) {
-      // 현재 페이지에 해당하는 영역 계산
-      const sourceY = page * pageContentHeight * RENDER_SCALE;
-      const sourceHeight = Math.min(
-        pageContentHeight * RENDER_SCALE,
-        canvas.height - sourceY
-      );
-
-      if (sourceHeight <= 0) break;
-
-      // 페이지용 캔버스 생성
-      const pageCanvas = document.createElement('canvas');
-      pageCanvas.width = CONTENT_WIDTH * RENDER_SCALE;
-      pageCanvas.height = pageContentHeight * RENDER_SCALE;
-
-      const ctx = pageCanvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-
-        // 해당 영역 복사
-        ctx.drawImage(
-          canvas,
-          0, sourceY,                              // source x, y
-          CONTENT_WIDTH * RENDER_SCALE, sourceHeight, // source width, height
-          0, 0,                                    // dest x, y
-          CONTENT_WIDTH * RENDER_SCALE, sourceHeight  // dest width, height
-        );
-      }
-
-      // PDF에 페이지 추가
-      if (page > 0) {
-        pdf.addPage([A4.WIDTH_PX, A4.HEIGHT_PX], 'portrait');
-      }
-
-      const imgData = pageCanvas.toDataURL('image/jpeg', 0.92);
-      pdf.addImage(
-        imgData,
-        'JPEG',
-        MARGIN.LEFT,
-        MARGIN.TOP,
-        CONTENT_WIDTH,
-        sourceHeight / RENDER_SCALE
-      );
-    }
-
-    // 5. PDF 저장
-    const pdfBuffer = pdf.output('arraybuffer');
-    const uint8Array = new Uint8Array(pdfBuffer);
-
-    const saveResult = await window.electronAPI.saveExportedFile(result.filePath!, uint8Array);
-    if (!saveResult.success) {
-      throw new Error(saveResult.error || 'Failed to save PDF file');
+      throw new Error(result.error || 'PDF export failed');
     }
 
     if (showToast) {
-      showToast(`PDF exported: ${pageCount} pages`, 'success');
+      showToast('PDF exported successfully!', 'success');
     }
 
-    return { success: true, pageCount, filePath: result.filePath! };
+    return { success: true, filePath: result.filePath };
 
   } catch (error) {
     console.error('PDF export error:', error);
@@ -207,6 +143,69 @@ export async function exportMarkdownToPDF(
 }
 
 /**
+ * PDF용 완전한 HTML 문서 생성
+ */
+function buildPDFHTML(element: HTMLElement): string {
+  // 현재 테마 감지
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
+  // SVG 크기 고정 처리
+  const clone = element.cloneNode(true) as HTMLElement;
+
+  // 복사 버튼 제거 (PDF에서 불필요)
+  clone.querySelectorAll('.copy-button, .mermaid-copy-btn, .code-copy-btn, button').forEach((btn) => {
+    btn.remove();
+  });
+
+  // 모든 Mermaid SVG의 크기를 명시적으로 설정
+  clone.querySelectorAll('.mermaid-block svg').forEach((svg) => {
+    const svgEl = svg as SVGSVGElement;
+    const viewBox = svgEl.getAttribute('viewBox');
+
+    if (viewBox) {
+      const [, , vbWidth, vbHeight] = viewBox.split(/\s+/).map(Number);
+      if (vbWidth && vbHeight) {
+        // viewBox 기준으로 크기 설정 (최대 너비 제한)
+        const maxWidth = 650; // A4 기준 컨텐츠 영역
+        const scale = vbWidth > maxWidth ? maxWidth / vbWidth : 1;
+        svgEl.style.width = `${vbWidth * scale}px`;
+        svgEl.style.height = `${vbHeight * scale}px`;
+        svgEl.style.maxWidth = '100%';
+      }
+    }
+  });
+
+  // 현재 페이지의 스타일시트 복사
+  let appStyles = '';
+  try {
+    Array.from(document.styleSheets).forEach(styleSheet => {
+      try {
+        Array.from(styleSheet.cssRules).forEach(rule => {
+          appStyles += rule.cssText + '\n';
+        });
+      } catch (_) { /* cross-origin 스타일시트 무시 */ }
+    });
+  } catch (_) { /* ignore */ }
+
+  return `<!DOCTYPE html>
+<html data-theme="${currentTheme}">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF Export</title>
+  <style>
+    ${appStyles}
+    ${PDF_STYLES}
+  </style>
+</head>
+<body data-theme="${currentTheme}">
+  <div class="markdown-content">
+    ${clone.innerHTML}
+  </div>
+</body>
+</html>`;
+}
+
+/**
  * Markdown 프린트 (브라우저 프린트 대화상자)
  */
 export function printMarkdownPreview(element: HTMLElement | null): void {
@@ -215,88 +214,60 @@ export function printMarkdownPreview(element: HTMLElement | null): void {
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
 
-  // 스타일시트 복사
-  let styles = '';
+  // 현재 테마 감지
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
+  // SVG 크기 고정 처리
+  const clone = element.cloneNode(true) as HTMLElement;
+
+  // 복사 버튼 제거
+  clone.querySelectorAll('.copy-button, .mermaid-copy-btn, .code-copy-btn, button').forEach((btn) => {
+    btn.remove();
+  });
+
+  clone.querySelectorAll('.mermaid-block svg').forEach((svg) => {
+    const svgEl = svg as SVGSVGElement;
+    const viewBox = svgEl.getAttribute('viewBox');
+
+    if (viewBox) {
+      const [, , vbWidth, vbHeight] = viewBox.split(/\s+/).map(Number);
+      if (vbWidth && vbHeight) {
+        const maxWidth = 650;
+        const scale = vbWidth > maxWidth ? maxWidth / vbWidth : 1;
+        svgEl.style.width = `${vbWidth * scale}px`;
+        svgEl.style.height = `${vbHeight * scale}px`;
+        svgEl.style.maxWidth = '100%';
+      }
+    }
+  });
+
+  // 현재 페이지의 스타일시트 복사
+  let appStyles = '';
   try {
     Array.from(document.styleSheets).forEach(styleSheet => {
       try {
         Array.from(styleSheet.cssRules).forEach(rule => {
-          styles += rule.cssText + '\n';
+          appStyles += rule.cssText + '\n';
         });
-      } catch (_) { /* ignore */ }
+      } catch (_) { /* cross-origin 스타일시트 무시 */ }
     });
   } catch (_) { /* ignore */ }
 
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Print Preview</title>
-        <style>
-          ${styles}
-
-          @media print {
-            @page {
-              size: A4;
-              margin: 15mm;
-            }
-
-            body {
-              margin: 0;
-              padding: 0;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-
-            .markdown-content {
-              max-width: 100%;
-              background: white;
-            }
-
-            /* 페이지 분할 제어 */
-            h1, h2, h3, h4, h5, h6 {
-              page-break-after: avoid;
-              break-after: avoid;
-            }
-
-            pre, table, blockquote, .mermaid-block {
-              page-break-inside: avoid;
-              break-inside: avoid;
-            }
-
-            /* Mermaid 다이어그램 크기 제한 */
-            .mermaid-block {
-              max-height: 250mm;
-              overflow: visible;
-            }
-
-            .mermaid-block svg {
-              max-height: 240mm;
-              max-width: 100%;
-              width: auto !important;
-              height: auto !important;
-            }
-          }
-
-          body {
-            margin: 0;
-            padding: 20px;
-            background: white;
-          }
-
-          .markdown-content {
-            max-width: 100%;
-            background: white;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="markdown-content">
-          ${element.innerHTML}
-        </div>
-      </body>
-    </html>
-  `);
+  printWindow.document.write(`<!DOCTYPE html>
+<html data-theme="${currentTheme}">
+<head>
+  <title>Print Preview</title>
+  <style>
+    ${appStyles}
+    ${PDF_STYLES}
+  </style>
+</head>
+<body data-theme="${currentTheme}">
+  <div class="markdown-content">
+    ${clone.innerHTML}
+  </div>
+</body>
+</html>`);
 
   printWindow.document.close();
   printWindow.focus();
