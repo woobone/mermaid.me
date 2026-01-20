@@ -59,16 +59,23 @@ English | [한국어](./README_KR.md)
 
 **System Requirements**: macOS 12.0 or later
 
-#### ⚠️ macOS Security Warning
+#### ⚠️ macOS Security Notice
 
-If you see "unidentified developer" warning:
+Since this app is not signed with an Apple Developer certificate, macOS may display one of the following warnings:
 
-**Method 1 (Recommended)**: Right-click the app icon → Select "Open" → Click "Open"
+- **"Mermaid Editor is damaged and can't be opened"**
+- **"Mermaid Editor can't be opened because Apple cannot check it for malicious software"**
+- **"Mermaid Editor is from an unidentified developer"**
 
-**Method 2**: Run in Terminal
+This is expected behavior for open-source apps distributed outside the Mac App Store. The app is safe to use.
+
+**Solution**: Run this command in Terminal after moving the app to Applications:
+
 ```bash
 xattr -cr "/Applications/Mermaid Editor.app"
 ```
+
+Then open the app normally. This command removes the macOS quarantine flag that blocks unsigned apps downloaded from the internet.
 
 ### Windows
 
