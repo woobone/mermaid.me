@@ -1,6 +1,6 @@
 {
   "name": "mermaid-diagram-editor",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Cross-platform desktop application for creating and editing Mermaid diagrams with real-time preview and Markdown support",
   "main": "dist/tscbuild/main/main.js",
   "author": "woobone <jajakk@gmail.com>",
